@@ -2,6 +2,7 @@ package ru.sharashin.springbootexample.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,10 @@ import java.util.HashMap;
 public class MainController {
     private final MessageRepo messageRepo;
 
+    // Get the env variable (from IDE)
+    @Value("${spring.profiles.active}")
+    private String profile;
+
     @Autowired
     public MainController(MessageRepo messageRepo) {
         this.messageRepo = messageRepo;
@@ -32,6 +37,7 @@ public class MainController {
         data.put("messages", messageRepo.findAll(Sort.by("id")));
 
         model.addAttribute("frontendData", data);
+        model.addAttribute("isDevMode", "dev".equals(profile));
         return "index";
     }
 }
