@@ -10,16 +10,29 @@
         name: "MessageForm",
         props: ['messages', 'editMessage'],
         data() {
-            return {
-                text : '',
-                id: ''
+            if (this.editMessage == null) {
+                return {
+                    text : '',
+                    id: ''
+                }
+            } else {
+                return {
+                    text : this.editMessage.text,
+                    id: this.editMessage.id,
+                    reactive: ''
+                }
             }
+
         },
         watch: {
             editMessage(newVal, oldVal) {
                 this.text = newVal.text;
                 this.id = newVal.id;
                 document.getElementById("message-input").focus();
+            },
+            text(newVal, oldVal) {
+                let messageIndex = this.messages.indexOf(this.editMessage)
+                this.messages[messageIndex].text = newVal
             }
         },
         methods : {

@@ -14,19 +14,13 @@
 
     export default {
         name: "MessageRow",
-        props: ['message', 'editMessage'],
+        props: ['message', 'editMessage', 'deleteMessage'],
         methods: {
             edit() {
                 this.editMessage(this.message)
             },
             del() {
-                const allMessages = this.$parent.messages;
-
-                this.$resource('/message{/id}').remove({id : this.message.id}).then(result => {
-                    if (result.ok) {
-                        allMessages.splice(allMessages.indexOf(this.message), 1);
-                    }
-                })
+                this.deleteMessage(this.message)
             }
         }
     }
