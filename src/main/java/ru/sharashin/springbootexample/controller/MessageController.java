@@ -4,6 +4,8 @@ package ru.sharashin.springbootexample.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import ru.sharashin.springbootexample.domain.Message;
 import ru.sharashin.springbootexample.domain.Views;
@@ -54,5 +56,20 @@ public class MessageController {
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") Message message) {
         messageRepo.delete(message);
+    }
+
+    @MessageMapping("/changeMessage")
+    @SendTo("/topic/activity")
+    public Message change(Message message) {
+        if (message.getId() == null) {
+            message.setCreationTime(LocalDateTime.now());
+        }
+        return messageRepo.save(message);
+    }
+    @MessageMapping("/deleteMessage")
+    @SendTo("/topic/del")
+    public Message deleteMessage(Message message) {
+        messageRepo.delete(message);
+        return message;
     }
 }

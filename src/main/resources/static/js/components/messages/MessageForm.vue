@@ -6,58 +6,57 @@
 </template>
 
 <script>
+    import {sendMessage} from "util/ws.js";
+
     export default {
         name: "MessageForm",
         props: ['messages', 'editMessage'],
         data() {
-            if (this.editMessage == null) {
-                return {
-                    text : '',
-                    id: ''
-                }
-            } else {
-                return {
-                    text : this.editMessage.text,
-                    id: this.editMessage.id,
-                    reactive: ''
-                }
+            return {
+                text : '',
+                id: '',
             }
-
         },
         watch: {
-            editMessage(newVal, oldVal) {
+            editMessage(newVal) {
                 this.text = newVal.text;
                 this.id = newVal.id;
                 document.getElementById("message-input").focus();
+                if (newVal) {
+                    this.$watch('text', function (val) {
+                        this.editMessage.text = val
+                    })
+                }
+
             },
-            text(newVal, oldVal) {
-                let messageIndex = this.messages.indexOf(this.editMessage)
-                this.messages[messageIndex].text = newVal
-            }
         },
         methods : {
             save() {
-                let message = {text: this.text};
-                if (this.text !== '') {
-                    if (this.id) {
-                        this.$resource('/message{/id}').update({id: this.id}, message).then(result => {
-                            result.json().then(data => {
-                                let messageIndex = this.messages.indexOf(this.editMessage);
-                                this.messages.splice(messageIndex, 1, data);
-                                this.text = '';
-                                this.id = '';
-                            })
-                        })
-                    } else {
-                        this.$resource('/message{/id}').save({}, message).then(result => {
-                            result.json().then(data => {
-                                this.messages.push(data);
-                                this.text = ''
-                            })
-                        })
-                    }
+                sendMessage({id: this.id, text: this.text})
+                this.text = ''
+                this.id = ''
 
-                }
+                // let message = {text: this.text};
+                // if (this.text !== '') {
+                //     if (this.id) {
+                //         this.$resource('/message{/id}').update({id: this.id}, message).then(result => {
+                //             result.json().then(data => {
+                //                 let messageIndex = this.messages.indexOf(this.editMessage);
+                //                 this.messages.splice(messageIndex, 1, data);
+                //                 this.text = '';
+                //                 this.id = '';
+                //             })
+                //         })
+                //     } else {
+                //         this.$resource('/message{/id}').save({}, message).then(result => {
+                //             result.json().then(data => {
+                //                 this.messages.push(data);
+                //                 this.text = ''
+                //             })
+                //         })
+                //     }
+                //
+                // }
 
             }
         }

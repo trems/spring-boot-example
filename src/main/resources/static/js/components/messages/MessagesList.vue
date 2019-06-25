@@ -16,6 +16,7 @@
 
     import MessageForm from "./MessageForm.vue";
     import MessageRow from "./MessageRow.vue";
+    import {deleteMessage as delMsg} from "util/ws.js";
 
     export default {
         name: "MessagesList",
@@ -25,21 +26,17 @@
                 message: null
             }
         },
-        watch: {
-            message: function (newVal, oldVal) {
-                this.message = newVal
-            }
-        },
         methods: {
             editMessage(message) {
                 this.message = message
             },
             deleteMessage(message) {
-                this.$resource('/message{/id}').remove({id : message.id}).then(result => {
-                    if (result.ok) {
-                        this.messages.splice(this.messages.indexOf(message), 1);
-                    }
-                })
+                delMsg(message)
+                // this.$resource('/message{/id}').remove({id : message.id}).then(result => {
+                //     if (result.ok) {
+                //         this.messages.splice(this.messages.indexOf(message), 1);
+                //     }
+                // })
             }
         },
         components: {

@@ -33,8 +33,12 @@ public class MainController {
     public String main(Model model, @AuthenticationPrincipal User user) {
 
         HashMap<Object, Object> data = new HashMap<>();
-        data.put("profile", user);
-        data.put("messages", messageRepo.findAll(Sort.by("id")));
+
+
+        if (user != null) {
+            data.put("profile", user);
+            data.put("messages", messageRepo.findAll(Sort.by("id")));
+        }
 
         model.addAttribute("frontendData", data);
         model.addAttribute("isDevMode", "dev".equals(profile));

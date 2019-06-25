@@ -14,6 +14,8 @@
 
 <script>
     import MessagesList from 'components/messages/MessagesList.vue'
+    import {addHandler} from "util/ws.js";
+    import {getIndex} from "util/collections";
 
     export default {
         name: "App",
@@ -25,6 +27,20 @@
         },
         components: {
             MessagesList,
+        },
+        mounted() {
+            addHandler(data => {
+                const message = data.body
+                const messageIndex = getIndex(this.messages, message.id)
+
+                if (data.deleted) {
+                    this.messages.splice(messageIndex, 1)
+                } else if (messageIndex > -1) {
+                    this.messages.splice(messageIndex, 1, message)
+                } else {
+                    this.messages.push(message)
+                }
+            })
         }
     }
 </script>
