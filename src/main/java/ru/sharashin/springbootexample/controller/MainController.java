@@ -37,7 +37,7 @@ public class MainController {
 
         if (user != null) {
             data.put("profile", user);
-            data.put("messages", messageRepo.findAll(Sort.by("id")));
+            data.put("messages", messageRepo.findAll());
         }
 
         model.addAttribute("frontendData", data);

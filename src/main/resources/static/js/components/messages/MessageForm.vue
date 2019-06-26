@@ -1,7 +1,26 @@
 <template>
     <div>
-        <input id="message-input" type="text" placeholder="Write something..." v-model="text">
-        <input type="button" value="Save message" v-on:click="save">
+        <v-layout row wrap>
+            <v-text-field
+                    id="message-input"
+                    label="Write something..."
+                    v-model="text"
+                    outline
+                    :counter="messageMaxLength"
+                    :rules="messageRules"
+            ></v-text-field>
+            <v-btn
+                id="save-message"
+                dark
+                large
+                :disabled="this.text.length > this.messageMaxLength || this.text.length === 0"
+                color="#1E2760"
+                v-on:click="save"
+            >
+                Save message
+            </v-btn>
+        </v-layout>
+<!--        <input id="message-input" type="text" placeholder="Write something..." v-model="text">-->
     </div>
 </template>
 
@@ -13,8 +32,12 @@
         props: ['messages', 'editMessage'],
         data() {
             return {
+                messageMaxLength: 140,
                 text : '',
                 id: '',
+                messageRules: [
+                    v => v.length <= this.messageMaxLength || 'Message must be shorter than 140 characters',
+                ]
             }
         },
         watch: {
@@ -32,31 +55,13 @@
         },
         methods : {
             save() {
-                sendMessage({id: this.id, text: this.text})
-                this.text = ''
-                this.id = ''
-
-                // let message = {text: this.text};
-                // if (this.text !== '') {
-                //     if (this.id) {
-                //         this.$resource('/message{/id}').update({id: this.id}, message).then(result => {
-                //             result.json().then(data => {
-                //                 let messageIndex = this.messages.indexOf(this.editMessage);
-                //                 this.messages.splice(messageIndex, 1, data);
-                //                 this.text = '';
-                //                 this.id = '';
-                //             })
-                //         })
-                //     } else {
-                //         this.$resource('/message{/id}').save({}, message).then(result => {
-                //             result.json().then(data => {
-                //                 this.messages.push(data);
-                //                 this.text = ''
-                //             })
-                //         })
-                //     }
-                //
-                // }
+                if (this.text.length <= this.messageMaxLength && this.text.length > 0) {
+                    sendMessage({id: this.id, text: this.text})
+                    this.text = ''
+                    this.id = ''
+                } else {
+                    console.log('короткое/длинное сообщение')
+                }
 
             }
         }
@@ -64,5 +69,8 @@
 </script>
 
 <style scoped>
-
+#save-message[disabled] {
+    background-color: #1E2760 !important;
+    opacity: 0.45;
+}
 </style>

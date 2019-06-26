@@ -1,13 +1,20 @@
 <template>
-    <div style="display: flex">
-        <a v-bind:href="`/message/${message.id}`">
-            <li><i>({{ message.id }}) </i>{{ message.text }}</li>
-        </a>
-        <span style="margin-left: auto">
-            <input type="button" value="edit" @click="edit" />
-            <input type="button" value="delete" @click="del"/>
-        </span>
-    </div>
+    <v-card class="ma-2">
+    <v-layout row wrap>
+        <v-container>
+            <v-card-actions class="headline">
+                <i class="pr-3">({{ message.id }}) </i>{{ message.text }}
+                <v-spacer></v-spacer>
+                <v-btn icon @click="edit">
+                    <v-icon>create</v-icon>
+                </v-btn>
+                <v-btn icon @click="del">
+                    <v-icon>delete</v-icon>
+                </v-btn>
+            </v-card-actions>
+        </v-container>
+    </v-layout>
+    </v-card>
 </template>
 
 <script>

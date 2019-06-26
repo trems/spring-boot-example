@@ -1,7 +1,8 @@
 <template>
     <div>
+    <v-layout align-space-around justify-start column fill-height/>
         <message-form :messages="messages" :editMessage="message"/>
-        <div style= "width: 300px;">
+        <div>
             <message-row v-for="message in messages"
                          :message="message"
                          :key="message.id"
@@ -32,11 +33,6 @@
             },
             deleteMessage(message) {
                 delMsg(message)
-                // this.$resource('/message{/id}').remove({id : message.id}).then(result => {
-                //     if (result.ok) {
-                //         this.messages.splice(this.messages.indexOf(message), 1);
-                //     }
-                // })
             }
         },
         components: {
