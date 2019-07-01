@@ -1,43 +1,51 @@
 <template>
     <div>
         <v-layout row wrap>
-            <v-text-field
-                    id="message-input"
-                    label="Write something..."
-                    v-model="text"
-                    outline
-                    :counter="messageMaxLength"
-                    :rules="messageRules"
-            ></v-text-field>
+            <v-textarea
+                id="message-input"
+                label="Write something..."
+                v-model="text"
+                outline
+                :auto-grow="true"
+                rows="1"
+                :counter="messageMaxLength"
+                :rules="messageRules"
+            ></v-textarea>
             <v-btn
                 id="save-message"
                 dark
+                round
                 large
-                :disabled="this.text.length > this.messageMaxLength || this.text.length === 0"
+                :disabled="btnIsDisabled"
                 color="#1E2760"
                 v-on:click="save"
             >
                 Save message
             </v-btn>
         </v-layout>
-<!--        <input id="message-input" type="text" placeholder="Write something..." v-model="text">-->
     </div>
 </template>
 
 <script>
     import {sendMessage} from "util/ws.js";
+    import {mapActions} from "vuex";
 
     export default {
         name: "MessageForm",
-        props: ['messages', 'editMessage'],
+        props: ['editMessage'],
         data() {
             return {
-                messageMaxLength: 140,
+                messageMaxLength: 100,
                 text : '',
                 id: '',
                 messageRules: [
-                    v => v.length <= this.messageMaxLength || 'Message must be shorter than 140 characters',
+                    v => v.length <= this.messageMaxLength || 'Message must be shorter than '+this.messageMaxLength+' characters',
                 ]
+            }
+        },
+        computed: {
+            btnIsDisabled() {
+                return this.text.length > this.messageMaxLength || this.text.length === 0
             }
         },
         watch: {
@@ -50,20 +58,28 @@
                         this.editMessage.text = val
                     })
                 }
-
             },
         },
         methods : {
+            ...mapActions(['addMessageAction', 'updateMessageAction']),
             save() {
+                const message = {
+                    id: this.id,
+                    text: this.text
+                }
                 if (this.text.length <= this.messageMaxLength && this.text.length > 0) {
-                    sendMessage({id: this.id, text: this.text})
+                    if (message.id) {
+                        this.updateMessageAction(message)
+                    } else {
+                        this.addMessageAction(message)
+                    }
                     this.text = ''
                     this.id = ''
                 } else {
                     console.log('короткое/длинное сообщение')
                 }
 
-            }
+            },
         }
     }
 </script>

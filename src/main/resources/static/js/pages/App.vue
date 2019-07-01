@@ -22,7 +22,7 @@
             Необходимо авторизоваться через <a href="/login">Google</a>
         </v-container>
         <v-container v-else>
-            <messages-list :messages="messages"/>
+            <messages-list/>
         </v-container>
 
     </v-content>
@@ -31,41 +31,44 @@
 </template>
 
 <script>
-import MessagesList from 'components/messages/MessagesList.vue'
-import {addHandler} from "util/ws.js";
-import {getIndex} from "util/collections";
+    import {mapMutations, mapState} from 'vuex'
+    import MessagesList from 'components/messages/MessagesList.vue'
+    import {addHandler} from "util/ws";
 
-export default {
-    name: "App",
-    data() {
-        return {
-            unsortedMessages: frontendData.messages,
-            profile: frontendData.profile
+    export default {
+        name: "App",
+        components: {
+            MessagesList,
+        },
+        computed: {
+            ...mapState([
+                'profile'
+            ]),
+        },
+        methods: {
+            ...mapMutations(['addMessageMutation', 'updateMessageMutation', 'removeMessageMutation'])
+        },
+        created() {
+            addHandler(data => {
+                if (data.objectType === 'MESSAGE') {
+                    switch (data.eventType) {
+                        case 'CREATE':
+                            this.addMessageMutation(data.body)
+                            break
+                        case 'UPDATE':
+                            this.updateMessageMutation(data.body)
+                            break
+                        case 'REMOVE':
+                            this.removeMessageMutation(data.body)
+                            break
+                        default:
+                            console.log('Looks like event type is unknown : '+data.eventType)
+                    }
+                }
+            })
         }
-    },
-    components: {
-        MessagesList,
-    },
-    computed: {
-        messages() {
-            return this.unsortedMessages.sort((a, b) => (a.id < b.id) ? 1 : -1)
-        }
-    },
-    mounted() {
-        addHandler(data => {
-            const message = data.body
-            const messageIndex = getIndex(this.messages, message.id)
 
-            if (data.deleted) {
-                this.messages.splice(messageIndex, 1)
-            } else if (messageIndex > -1) {
-                this.messages.splice(messageIndex, 1, message)
-            } else {
-                this.messages.push(message)
-            }
-        })
     }
-}
 </script>
 
 <style scoped>

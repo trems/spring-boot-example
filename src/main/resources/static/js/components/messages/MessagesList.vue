@@ -1,13 +1,12 @@
 <template>
     <div>
     <v-layout align-space-around justify-start column fill-height/>
-        <message-form :messages="messages" :editMessage="message"/>
+        <message-form :editMessage="message"/>
         <div>
             <message-row v-for="message in messages"
                          :message="message"
                          :key="message.id"
-                         :editMessage="editMessage"
-                         :deleteMessage="deleteMessage">
+                         :editMessage="editMessage">
             </message-row>
         </div>
     </div>
@@ -17,28 +16,31 @@
 
     import MessageForm from "./MessageForm.vue";
     import MessageRow from "./MessageRow.vue";
+    import {mapGetters} from "vuex";
     import {deleteMessage as delMsg} from "util/ws.js";
+    import {addHandler} from "util/ws";
 
     export default {
         name: "MessagesList",
-        props: ['messages'],
         data() {
             return {
-                message: null
+                message: null,
             }
+        },
+        computed: {
+            ...mapGetters([
+                'messages'
+            ]),
         },
         methods: {
             editMessage(message) {
                 this.message = message
-            },
-            deleteMessage(message) {
-                delMsg(message)
             }
         },
         components: {
             MessageForm,
             MessageRow
-        }
+        },
     }
 </script>
 

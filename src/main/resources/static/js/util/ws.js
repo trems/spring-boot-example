@@ -10,22 +10,26 @@ export function connect() {
         return new SockJS('/messages-websocket')
     })
     // comment line below to logging
-    stompClient.debug = () => {}
+    //stompClient.debug = () => {}
     stompClient.connect({}, frame => {
         //console.log('Connected: ' + frame)
+        // stompClient.subscribe('/topic/activity', message => {
+        //     let data = {
+        //         body: JSON.parse(message.body)
+        //     }
+        //     handlers.forEach(handler => handler(data))
+        // })
         stompClient.subscribe('/topic/activity', message => {
-            let data = {
-                body: JSON.parse(message.body)
-            }
+            let data = JSON.parse(message.body)
             handlers.forEach(handler => handler(data))
         })
-        stompClient.subscribe('/topic/del', message => {
-            let data = {
-                body: JSON.parse(message.body),
-                deleted: true
-            }
-            handlers.forEach(handler => handler(data))
-        })
+        // stompClient.subscribe('/topic/del', messageId => {
+        //     let data = {
+        //         body: JSON.parse(messageId.body),
+        //         deleted: true
+        //     }
+        //     handlers.forEach(handler => handler(data))
+        // })
     })
 }
 
